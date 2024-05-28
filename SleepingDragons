@@ -1,0 +1,56 @@
+import random
+import time
+
+class Knight:
+    def _init_(self, name):
+        self.name = name
+        self.eggs_collected = 0
+
+    def snatch_egg(self):
+        self.eggs_collected += 1
+
+class Dragon:
+    def _init_(self, name):
+        self.name = name
+        self.is_awake = False
+
+    def wake_up(self):
+        self.is_awake = True
+
+def game_round(knight, dragons):
+    print(f"\n{knight.name} is trying to snatch an egg!")
+    time.sleep(1)
+    dragon = random.choice(dragons)
+    wake_chance = random.random()
+
+    if wake_chance > 0.7:
+        dragon.wake_up()
+        print(f"Oh no! {dragon.name} woke up!")
+        return False
+    else:
+        knight.snatch_egg()
+        print(f"Success! {knight.name} snatched an egg from under {dragon.name}'s nose.")
+        return True
+
+def main():
+    print("Welcome to Sleeping Dragons!\n")
+    knight_name = input("Enter the name of your knight: ")
+    knight = Knight(knight_name)
+    
+    dragon_names = ["Smaug", "Toothless", "Drogon", "Viserion", "Rhaegal"]
+    dragons = [Dragon(name) for name in dragon_names]
+
+    rounds = 5
+    for i in range(rounds):
+        print(f"\nRound {i+1}:")
+        if not game_round(knight, dragons):
+            print(f"Game Over! {knight.name} was caught by the dragon!")
+            break
+        else:
+            print(f"{knight.name} now has {knight.eggs_collected} eggs.")
+    else:
+        print(f"\nCongratulations! {knight.name} successfully collected {knight.eggs_collected} eggs.")
+
+if __name__ == "_main_":
+    main()
+    
