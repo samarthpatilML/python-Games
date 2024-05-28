@@ -1,0 +1,92 @@
+import pygame
+import random
+import time
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption('Dancing Challenge')
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+
+# Fonts
+font = pygame.font.Font(None, 74)
+small_font = pygame.font.Font(None, 36)
+
+# Keys and colors
+keys = [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]
+key_colors = {pygame.K_UP: RED, pygame.K_DOWN: GREEN, pygame.K_LEFT: BLUE, pygame.K_RIGHT: YELLOW}
+key_names = {pygame.K_UP: "UP", pygame.K_DOWN: "DOWN", pygame.K_LEFT: "LEFT", pygame.K_RIGHT: "RIGHT"}
+
+# Game variables
+score = 0
+time_limit = 60
+start_time = time.time()
+current_key = random.choice(keys)
+next_key_time = time.time() + 2  # Allow 2 seconds to press the key
+
+running = True
+while running:
+    screen.fill(BLACK)
+
+    # Event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == current_key:
+                score += 1
+                current_key = random.choice(keys)
+                next_key_time = time.time() + 2
+            else:
+                score -= 1
+
+    # Draw the current key as a colorful rectangle
+    key_color = key_colors[current_key]
+    pygame.draw.rect(screen, key_color, (WIDTH // 2 - 50, HEIGHT // 2 - 50, 100, 100))
+    key_text = font.render(key_names[current_key], True, WHITE)
+    screen.blit(key_text, (WIDTH // 2 - key_text.get_width() // 2, HEIGHT // 2 - key_text.get_height() // 2))
+
+    # Draw the score
+    score_text = small_font.render(f"Score: {score}", True, WHITE)
+    screen.blit(score_text, (10, 10))
+
+    # Draw the timer
+    elapsed_time = time.time() - start_time
+    remaining_time = max(0, time_limit - elapsed_time)
+    timer_text = small_font.render(f"Time: {int(remaining_time)}", True, WHITE)
+    screen.blit(timer_text, (WIDTH - 150, 10))
+
+    # Check if time is up
+    if remaining_time <= 0:
+        running = False
+
+    # Check if the player failed to press the key in time
+    if time.time() > next_key_time:
+        score -= 1
+        current_key = random.choice(keys)
+        next_key_time = time.time() + 2
+
+    pygame.display.flip()
+    pygame.time.Clock().tick(30)
+
+# Game Over
+screen.fill(BLACK)
+game_over_text = font.render("Game Over", True, WHITE)
+final_score_text = small_font.render(f"Final Score: {score}", True, WHITE)
+screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
+screen.blit(final_score_text, (WIDTH // 2 - final_score_text.get_width() // 2, HEIGHT // 2 + game_over_text.get_height() // 2 + 10))
+pygame.display.flip()
+
+# Wait before closing
+pygame.time.wait(5000)
+pygame.quit()
